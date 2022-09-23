@@ -2,8 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.weatherapp">
-    
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:allowBackup="true"
@@ -16,11 +17,14 @@
         android:theme="@style/Theme.WeatherApp"
         tools:targetApi="31">
         <service
-                android:name=".ForegroundService"
-                android:enabled="true"
-                android:exported="true">
-            
-        </service>
+            android:name=".ApiService"
+            android:enabled="true"
+            android:exported="true"></service>
+        <service
+            android:name=".ForegroundService"
+            android:enabled="true"
+            android:exported="true"></service>
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -31,9 +35,11 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".InternetBroadcastReceiver"  android:exported="true">
+        <receiver
+            android:name=".InternetBroadcastReceiver"
+            android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.INPUT_METHOD_CHANGED" />
             </intent-filter>
         </receiver>
