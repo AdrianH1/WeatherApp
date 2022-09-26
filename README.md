@@ -1,7 +1,7 @@
 # Weather APP
 ## Übersicht
 Dieses Projekt beinhaltet einen Wetter Service, der es Nutzern ermöglicht, über eine Wetter API Temparaturänderungen zu verfolgen.
-Der Client-Service greifft alle 60 Sekunden auf die API zu. Die Applikation informiert den Nutzer über Notifcations zum aktuellen Status des Sertvices.
+Der Client-Service greift alle 60 Sekunden auf die API zu. Die Applikation informiert den Nutzer über Notifcations zum aktuellen Status des Services.
 
 
 ## Gebrauchsanweisung
