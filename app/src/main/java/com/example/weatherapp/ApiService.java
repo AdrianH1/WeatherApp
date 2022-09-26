@@ -2,16 +2,13 @@ package com.example.weatherapp;
 
 import android.app.Service;
 import android.content.Intent;
-import android.os.Build;
 import android.os.IBinder;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
 
 import com.google.gson.Gson;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.math.BigDecimal;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.SimpleDateFormat;
@@ -78,7 +75,7 @@ public class ApiService extends Service {
                             float temp1 = data.getResult().get(0).getValues().getAir_temperature().getValue();
                             float temp2 = data.getResult().get(1).getValues().getAir_temperature().getValue();
                             if (calcDifferenz(temp1, temp2, difference)) {
-                                createNotifikation(difference);
+                                createNotification(difference);
                             }
                         }
                         sleep(60000);
@@ -113,7 +110,7 @@ public class ApiService extends Service {
      * Gibt eine Meldung aus, dass der Temperaturunterschried grösser ist
      * @param difference Vom User eingegebene Differenz
      */
-    public void createNotifikation(float difference) {
+    public void createNotification(float difference) {
         Intent serviceIntent = new Intent(getApplicationContext(), ForegroundService.class);
         serviceIntent.putExtra("inputExtra", "Temperatur hat sich um mehr als " + difference + " Grad verändert!");
         ContextCompat.startForegroundService(getApplicationContext(), serviceIntent);

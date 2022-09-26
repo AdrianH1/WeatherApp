@@ -63,10 +63,10 @@ public class MainActivity extends AppCompatActivity  {
             }
         });
 
+        //BroadcastReciever für die Erkennung der Internetverbindung
         BroadcastReceiver br = new InternetBroadcastReceiver(this);
         IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
         filter.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED);
-        registerReceiver(br, new IntentFilter("INTERNET_LOST"));
         this.registerReceiver(br, filter);
 
         // Api Service starten
@@ -77,6 +77,9 @@ public class MainActivity extends AppCompatActivity  {
         firstStart = false;
     }
 
+    /**
+     * Startet Service für API Abfrage der Wetter Daten
+     */
     public void startService() {
         float difference = Float.parseFloat(edt_diff.getText().toString());
         txt_state.setText("Service gestartet");
@@ -86,7 +89,10 @@ public class MainActivity extends AppCompatActivity  {
         serviceIntent.putExtra("inputExtra", "Weather Service running");
         ContextCompat.startForegroundService(this, serviceIntent);
     }
-    
+
+    /**
+     * Stoppt Service für API Abfrage der Wetter Daten
+     */
     public void stopService() {
         apiService.running = false;
         txt_state.setText("Service gestoppt");

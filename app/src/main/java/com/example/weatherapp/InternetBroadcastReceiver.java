@@ -7,6 +7,10 @@ import android.net.ConnectivityManager;
 
 import androidx.core.content.ContextCompat;
 
+/**
+ * Broadcast Reciever zum Erkennen von Verbindungsänderungen
+ */
+
 public class InternetBroadcastReceiver extends BroadcastReceiver {
 
     MainActivity ma;
@@ -17,13 +21,6 @@ public class InternetBroadcastReceiver extends BroadcastReceiver {
 
     public void onReceive(Context context, Intent intent) {
         try {
-            //context.sendBroadcast(new Intent("INTERNET_LOST"));
-
-//            String action = intent.getAction();
-//            if (action == ConnectivityManager.EXTRA_NO_CONNECTIVITY) {
-//                System.out.println("lost");
-//            }
-
             final ConnectivityManager connMgr = (ConnectivityManager) context
                     .getSystemService(Context.CONNECTIVITY_SERVICE);
 
