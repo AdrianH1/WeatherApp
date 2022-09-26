@@ -25,26 +25,30 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity  {
+
     private ApiService apiService;
+    private TextView txt_state;
+    private EditText edt_diff;
+    protected boolean firstStart = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        EditText edt_diff = (EditText) findViewById(R.id.edt_difference);
-        TextView txt_state = (TextView) findViewById(R.id.txt_state);
+        edt_diff = (EditText) findViewById(R.id.edt_difference);
+        txt_state = (TextView) findViewById(R.id.txt_state);
         Button btn_start = (Button) findViewById(R.id.btn_start);
         Button btn_stop = (Button) findViewById(R.id.btn_stop);
+
+        txt_state.setText("Service gestoppt");
 
         btn_start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 try {
-                    float difference = Float.parseFloat(edt_diff.getText().toString());
                     startService();
-                    apiService.getData(difference);
                 }
                 catch (Exception e){
                     e.printStackTrace();
@@ -59,9 +63,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        BroadcastReceiver br = new InternetBroadcastReceiver();
+        BroadcastReceiver br = new InternetBroadcastReceiver(this);
         IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
         filter.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED);
+        registerReceiver(br, new IntentFilter("INTERNET_LOST"));
         this.registerReceiver(br, filter);
 
         // Api Service starten
@@ -69,15 +74,22 @@ public class MainActivity extends AppCompatActivity {
         bindService(intent, connection, Context.BIND_AUTO_CREATE);
         startService(intent);
 
+        firstStart = false;
     }
 
     public void startService() {
+        float difference = Float.parseFloat(edt_diff.getText().toString());
+        txt_state.setText("Service gestartet");
+        apiService.running = true;
+        apiService.getData(difference);
         Intent serviceIntent = new Intent(this, ForegroundService.class);
-        serviceIntent.putExtra("inputExtra", "Foreground Service Example in Android");
+        serviceIntent.putExtra("inputExtra", "Weather Service running");
         ContextCompat.startForegroundService(this, serviceIntent);
     }
     
     public void stopService() {
+        apiService.running = false;
+        txt_state.setText("Service gestoppt");
         Intent serviceIntent = new Intent(this, ForegroundService.class);
         stopService(serviceIntent);
     }

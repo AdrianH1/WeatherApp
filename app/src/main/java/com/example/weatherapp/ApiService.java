@@ -21,7 +21,11 @@ import java.util.Date;
 /**
  * Klasse zum Abfragen der API und berechnen der Temperaturdifferenz
  */
+
 public class ApiService extends Service {
+
+    boolean running;
+
     public ApiService() {
     }
 
@@ -40,41 +44,46 @@ public class ApiService extends Service {
             @Override
             public void run() {
                 try {
-                    // Da API keine aktuellen Daten liefern, Einträge aus dem letzten Jahr holen. Da nicht jeden Tag Daten vorhanden sind, werden immer die aktuellsten 2 Werte innerhalb des letzten Monats vom letzten Jahr geholt
-                    Calendar cal = Calendar.getInstance();
-                    Date today = cal.getTime();
-                    cal.add(Calendar.YEAR, -1);
-                    Date lastYear = cal.getTime();
-                    cal.add(Calendar.MONTH, -1);
-                    Date lastMonth = cal.getTime();
+                    while (running)
+                    {
+                        // Da API keine aktuellen Daten liefern, Einträge aus dem letzten Jahr holen. Da nicht jeden Tag Daten vorhanden sind, werden immer die aktuellsten 2 Werte innerhalb des letzten Monats vom letzten Jahr geholt
+                        Calendar cal = Calendar.getInstance();
+                        Date today = cal.getTime();
+                        cal.add(Calendar.YEAR, -1);
+                        Date lastYear = cal.getTime();
+                        cal.add(Calendar.MONTH, -1);
+                        Date lastMonth = cal.getTime();
 
-                    String pattern = "YYYY-MM-dd";
-                    SimpleDateFormat simpleDateFormat = null;
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                        simpleDateFormat = new SimpleDateFormat(pattern);
-                    }
-
-                    String dateFrom = simpleDateFormat.format(lastMonth);
-                    String dateTo = simpleDateFormat.format(lastYear);
-
-                    // Daten von API holen
-                    URL url = new URL("https://tecdottir.herokuapp.com/measurements/tiefenbrunnen?startDate=" + dateFrom + "&endDate=" + dateTo + "&sort=timestamp_cet%20desc&limit=2&offset=0");
-                    URLConnection request = url.openConnection();
-                    request.connect();
-
-                    InputStreamReader reader = new InputStreamReader((InputStream)request.getContent());
-
-                    Gson gson = new Gson();
-                    WeatherData data = gson.fromJson(reader, WeatherData.class);
-
-                    // Prüfen ob sich die Temperatur um mehr als die Differenz verändert hat
-                    if (data.getResult().size() >= 2) {
-                        float temp1 = data.getResult().get(0).getValues().getAir_temperature().getValue();
-                        float temp2 = data.getResult().get(1).getValues().getAir_temperature().getValue();
-                        if (calcDifferenz(temp1, temp2, difference)) {
-                            createNotifikation(difference);
+                        String pattern = "YYYY-MM-dd";
+                        SimpleDateFormat simpleDateFormat = null;
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                            simpleDateFormat = new SimpleDateFormat(pattern);
                         }
+
+                        String dateFrom = simpleDateFormat.format(lastMonth);
+                        String dateTo = simpleDateFormat.format(lastYear);
+
+                        // Daten von API holen
+                        URL url = new URL("https://tecdottir.herokuapp.com/measurements/tiefenbrunnen?startDate=" + dateFrom + "&endDate=" + dateTo + "&sort=timestamp_cet%20desc&limit=2&offset=0");
+                        URLConnection request = url.openConnection();
+                        request.connect();
+
+                        InputStreamReader reader = new InputStreamReader((InputStream)request.getContent());
+
+                        Gson gson = new Gson();
+                        WeatherData data = gson.fromJson(reader, WeatherData.class);
+
+                        // Prüfen ob sich die Temperatur um mehr als die Differenz verändert hat
+                        if (data.getResult().size() >= 2) {
+                            float temp1 = data.getResult().get(0).getValues().getAir_temperature().getValue();
+                            float temp2 = data.getResult().get(1).getValues().getAir_temperature().getValue();
+                            if (calcDifferenz(temp1, temp2, difference)) {
+                                createNotifikation(difference);
+                            }
+                        }
+                        sleep(60000);
                     }
+
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }
