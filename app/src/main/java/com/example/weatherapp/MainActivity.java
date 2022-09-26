@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void startService() {
         Intent serviceIntent = new Intent(this, ForegroundService.class);
-        serviceIntent.putExtra("inputExtra", "Foreground Service Example in Android");
+        serviceIntent.putExtra("inputExtra", "Weather APP is running!");
         ContextCompat.startForegroundService(this, serviceIntent);
     }
     
